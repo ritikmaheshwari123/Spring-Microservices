@@ -2,6 +2,8 @@ package com.microservice.currency_conversion_service.controller;
 
 import com.microservice.currency_conversion_service.bean.CurrencyConversionBean;
 import com.microservice.currency_conversion_service.proxy.CurrencyExchangeServiceProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,8 @@ public class CurrencyConversionCalculatorController {
 
     @Autowired
     private CurrencyExchangeServiceProxy proxy;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping("/currency-conversion/from/{from}/to/{to}/{quantity}")
     public CurrencyConversionBean getConversion(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity){
@@ -45,6 +49,7 @@ public class CurrencyConversionCalculatorController {
     public CurrencyConversionBean getConversionFeign(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity){
 
         CurrencyConversionBean response = proxy.getCurrencyExchangeRate(from,to);
+        logger.info("The response is : {}",response);
         return new CurrencyConversionBean(response.getId(),from,to, quantity,response.getExchangeRate(),
                 quantity.multiply(response.getExchangeRate()),response.getPort());
     }
